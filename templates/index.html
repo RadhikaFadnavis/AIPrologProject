@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spam Detector</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Hybrid Spam Detector</h1>
+        <form method="POST">
+            <textarea name="message" rows="8" placeholder="Enter your email or message here...">{{ message }}</textarea>
+            <button type="submit">Check Spam</button>
+        </form>
+
+        <br><br>
+        <a href="/fetch_emails"><button type="button">Fetch Unread Emails from Gmail</button></a>
+        <a href="/stats_chart"><button type="button">View Spam Stats Chart</button></a>
+
+
+        {% if result %}
+            <div class="result">
+                <h3>Result:</h3>
+                <p><strong>{{ result }}</strong></p>
+
+                {% if matched_rules %}
+                    <h4>Matched Prolog Rules:</h4>
+                    <ul>
+                        {% for rule in matched_rules %}
+                            <li>{{ rule }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
