@@ -1,5 +1,6 @@
 # spam_detector.py
 from gmailconnect import fetch_unread_emails  # Import the function
+from email_security_checks import analyze_headers
 from pyswip import Prolog
 import joblib
 import re
@@ -72,13 +73,51 @@ def classify_message(message):
 
     return "Not Spam"
 
+
+sample_email = {
+    "from": "Amazon Security <support@amaz0n-secure.com>",
+    "subject": "URGENT: Update your credit card information now!",
+    "body": """
+        Dear Customer,
+
+        Your account has been temporarily suspended due to suspicious activity.
+        To restore access, please update your credit card information immediately.
+
+        Click here: http://amaz0n-secure.com/verify
+
+        Thank you,
+        Amazon Security Team
+    """,
+    "headers": {
+        "From": "Amazon Security <support@amaz0n-secure.com>",
+        "Return-Path": "<spoofed@otherdomain.xyz>",
+        "Authentication-Results": "spf=fail smtp.mailfrom=otherdomain.xyz; dkim=fail header.d=amaz0n-secure.com;",
+        "Received-SPF": "fail (gmail.com: domain of otherdomain.xyz does not designate 123.456.789.000 as permitted sender)"
+    }
+}
+
 # === MAIN DRIVER ===
 if __name__ == "__main__":
     print("Fetching unread emails...")
-    emails = fetch_unread_emails()  # Get unread messages
+    emails = [sample_email]  # Get unread messages
 
-    for idx, msg in enumerate(emails):
+    for idx, email_data in enumerate(emails):
         print(f"\n>> EMAIL #{idx+1} <<")
-        print(f"Content: {msg[:900]}")  # Optional: limit long text
-        result = classify_message(msg)
+        sender = email_data["from"]
+        subject = email_data["subject"]
+        body = email_data["body"]
+        headers = email_data["headers"]
+
+        # Combine for classification
+        full_message = f"{sender}\n{subject}\n{body}"
+
+        # Check Prolog + ML + Header analysis
+        rules_triggered = get_matched_rules(full_message)
+
+        # Add spoofing/header rules
+        spoof_flags = analyze_headers(headers)
+        rules_triggered.extend(spoof_flags)
+
+        result = classify_message(full_message)  # Update this to accept rules_triggered if needed
         print(f"==> Classification Result: {result}")
+

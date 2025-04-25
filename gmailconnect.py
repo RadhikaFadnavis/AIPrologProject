@@ -47,7 +47,14 @@ def fetch_unread_emails():
                 print("Subject:", subject)
                 print("Body:\n", body[:900])  # Show only first 900 chars
 
-                fetched_emails.append(body)
+                # Update fetched_emails.append(body) to:
+                fetched_emails.append({
+                    "from": from_,
+                    "subject": subject,
+                    "body": body,
+                    "headers": dict(msg.items())
+                })
+
 
     imap.logout()
     return fetched_emails
