@@ -2,24 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Spam Detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Safe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+
     <div class="container">
-        <h1>Hybrid Spam Detector</h1>
+        <h1>Spam Safe</h1>
+
+        <!-- Spam detection form -->
         <form method="POST">
             <textarea name="message" rows="8" placeholder="Enter your email or message here...">{{ message }}</textarea>
             <button type="submit">Check Spam</button>
         </form>
 
         <br><br>
+        
+        <!-- Additional actions -->
         <a href="/fetch_emails"><button type="button">Fetch Unread Emails from Gmail</button></a>
         <a href="/stats_chart"><button type="button">View Spam Stats Chart</button></a>
 
-
         {% if result %}
             <div class="result">
+                <div class="success-checkmark {% if 'Not Spam' in result %}success{% else %}danger{% endif %}">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                        <path class="checkmark__check" fill="none" d="M14 27l7 7 17-17"/>
+                    </svg>
+                </div>
+
                 <h3>Result:</h3>
                 <p><strong>{{ result }}</strong></p>
 
@@ -34,5 +47,10 @@
             </div>
         {% endif %}
     </div>
+
+    <div class="footer">
+        Powered by The SpamSafe Team
+    </div>
+
 </body>
 </html>

@@ -1,72 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #2c3e50;
+        }
+
         table {
-            width: 100%;
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
             border-collapse: collapse;
-            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
+            padding: 12px 20px;
             text-align: left;
+            font-size: 1rem;
         }
 
         th {
             background-color: #f2f2f2;
+            color: #2c3e50;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
         }
 
-        tr:hover {
+        tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
+        tr:hover {
+            background-color: #eaf1f6;
+        }
+
         .spam {
-            color: red;
+            color: #e74c3c;
             font-weight: bold;
         }
 
         .not-spam {
-            color: green;
+            color: #2ecc71; /* Corrected Green Color */
             font-weight: bold;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 10px;
+            font-size: 0.9rem;
+            color: #777;
+            font-style: italic;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1rem;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
+
     <h1>Fetched Emails Classification</h1>
 
     {% if results %}
-    <table>
-        <tr>
-            <th>Email Preview</th>
-            <th>Spam Status</th>
-            <th>Matched Rules</th>
-        </tr>
-        {% for r in results %}
-        <tr>
-            <td>{{ r.message }}</td>
-            <td class="{{ 'spam' if 'Spam' in r.result else 'not-spam' }}">{{ r.result }}</td>
-            <td>
-                {% if r.rules %}
-                    <ul>
-                        {% for rule in r.rules %}
-                            <li>{{ rule }}</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    None
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+        <table>
+            <tr>
+                <th>Email Preview</th>
+                <th>Spam Status</th>
+                <th>Matched Rules</th>
+            </tr>
+            {% for r in results %}
+                <tr>
+                    <td>{{ r.message | truncate(50) }}</td>
+                    <!-- Here is the exact match condition for 'Spam' and 'Not Spam' -->
+                    <td class="{{ 'spam' if r.result == 'Spam' else 'not-spam' }}">{{ r.result }}</td>
+                    <td>
+                        {% if r.rules %}
+                            <ul>
+                                {% for rule in r.rules %}
+                                    <li>{{ rule }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            None
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     {% else %}
-        <p>No unread emails found.</p>
+        <p style="text-align: center;">No unread emails found.</p>
     {% endif %}
 
-    <br>
-    <a href="/">⬅ Back to Home</a>
+    <a href="/" class="back-link">⬅ Back to Home</a>
+
+    <div class="footer">
+        Powered by Hybrid Spam Detector Team
+    </div>
+
 </body>
 </html>

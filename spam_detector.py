@@ -68,7 +68,7 @@ def classify_message(message):
 
     if is_spam:
         print("Spam detected by ML model. Updating Prolog rules...")
-        return "Spam (ML Model Detected & Updated Prolog)"
+        return "Spam"
 
     return "Not Spam"
 
