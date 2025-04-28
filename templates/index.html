@@ -18,12 +18,9 @@
             <button type="submit">Check Spam</button>
         </form>
 
-        <br><br>
-        
-        <!-- Additional actions -->
+        <br>
         <a href="/fetch_emails"><button type="button">Fetch Unread Emails from Gmail</button></a>
-        <a href="/stats_chart"><button type="button">View Spam Stats Chart</button></a>
-
+        
         {% if result %}
             <div class="result">
                 <div class="success-checkmark {% if 'Not Spam' in result %}success{% else %}danger{% endif %}">
