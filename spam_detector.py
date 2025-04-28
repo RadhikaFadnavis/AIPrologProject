@@ -46,7 +46,11 @@ def get_matched_rules(message):
 
     return matched_rules
 
-    
+def check_sender_blacklist(sender):
+    prolog = Prolog()
+    prolog.consult('blacklist.pl')
+    query = list(prolog.query(f"blacklisted_sender('{sender}')"))
+    return bool(query)
 
 
 def clean_text(text):
@@ -58,9 +62,15 @@ def predict_spam_ml(message):
     print("ml_model.predict([processed_message])", ml_model.predict([processed_message]))
     return ml_model.predict([processed_message])[0]
 
-def classify_message(message):
+def classify_message(message, sender=None):
+    # If sender is blacklisted, immediately classify as Spam
+    if sender and check_sender_blacklist(sender):
+        print("Blacklisted sender, declaring spam")
+        return "Spam"
+    
     if check_prolog_spam(get_matched_rules(message)):
-        return "Spam (Prolog Rules Matched)"
+        print("Prolog rules matched")
+        return "Spam"
     else:
         print("Prolog rules not matched. Running ML models.")
 

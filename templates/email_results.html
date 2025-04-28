@@ -29,6 +29,7 @@
             background-color: #fff;
             box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
+            overflow: hidden;
         }
 
         th, td {
@@ -40,8 +41,6 @@
         th {
             background-color: #f2f2f2;
             color: #2c3e50;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
         }
 
         tr:nth-child(even) {
@@ -58,7 +57,7 @@
         }
 
         .not-spam {
-            color: #2ecc71; /* Corrected Green Color */
+            color: #2ecc71;
             font-weight: bold;
         }
 
@@ -87,6 +86,26 @@
         .back-link:hover {
             text-decoration: underline;
         }
+
+        .blacklist-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        .blacklist-button:hover {
+            background-color: #c0392b;
+        }
+
+        .sender-info {
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
@@ -97,13 +116,36 @@
         <table>
             <tr>
                 <th>Email Preview</th>
+                <th>Sender</th>
                 <th>Spam Status</th>
                 <th>Matched Rules</th>
             </tr>
             {% for r in results %}
                 <tr>
                     <td>{{ r.message | truncate(50) }}</td>
-                    <!-- Here is the exact match condition for 'Spam' and 'Not Spam' -->
+                    <td>
+                        <div class="sender-info">
+                            <span>{{ r.sender }}</span>
+                            <form action="/blacklist" method="POST" style="margin:0;">
+                                <input type="hidden" name="sender" value="{{ r.sender }}">
+                                <button type="submit" class="blacklist-button"
+
+                                {% if r.blacklisted %}
+                                    disabled style="background-color: grey; cursor: not-allowed;"
+                                {% else %}
+                                    style="background-color: red; color: white;"
+                                {% endif %}
+                            >
+                            {% if r.blacklisted %}
+                                Already Blacklisted
+                            {% else %}
+                                Blacklist
+                            {% endif %}
+
+                            </button>
+                            </form>
+                        </div>
+                    </td>
                     <td class="{{ 'spam' if r.result == 'Spam' else 'not-spam' }}">{{ r.result }}</td>
                     <td>
                         {% if r.rules %}
