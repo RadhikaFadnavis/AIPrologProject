@@ -6,5 +6,4 @@
 
 % Example entry:
 
-blacklisted_sender('srushti.johari@cumminscollege.in').
-
+blacklisted_sender('radhika.fadnavis@cumminscollege.in').

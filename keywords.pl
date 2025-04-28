@@ -12,7 +12,5 @@ spam_keyword("claim now").
 spam_keyword("act now").
 spam_keyword("claim").
 spam_keyword("prize").
-spam_keyword("15").
 
 
-spam_keyword("gift").
