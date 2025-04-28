@@ -1,4 +1,4 @@
-# email_fetcher.py
+# gmailconnect.py
 import imaplib
 import email
 from email.header import decode_header
@@ -6,7 +6,7 @@ import html2text
 
 def fetch_unread_emails():
     EMAIL = "aiprojectfinalyear@gmail.com"
-    APP_PASSWORD = "tpih yjxj gsib eixs"
+    APP_PASSWORD = "tpih yjxj gsib eixs"  # Replace with your real app password
 
     imap = imaplib.IMAP4_SSL("imap.gmail.com")
     imap.login(EMAIL, APP_PASSWORD)
@@ -23,11 +23,18 @@ def fetch_unread_emails():
         for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
+                
+                # Decode subject
                 subject, encoding = decode_header(msg["Subject"])[0]
                 if isinstance(subject, bytes):
                     subject = subject.decode(encoding or "utf-8")
-                from_ = msg.get("From")
                 
+                # Get sender
+                from_ = msg.get("From")
+                # Optional: clean up sender (only email address)
+                if "<" in from_ and ">" in from_:
+                    from_ = from_.split("<")[1].split(">")[0].strip()
+
                 body = ""
                 if msg.is_multipart():
                     for part in msg.walk():
@@ -47,7 +54,11 @@ def fetch_unread_emails():
                 print("Subject:", subject)
                 print("Body:\n", body[:900])  # Show only first 900 chars
 
-                fetched_emails.append(body)
+                # Append both sender and body
+                fetched_emails.append({
+                    "sender": from_,
+                    "body": body
+                })
 
     imap.logout()
     return fetched_emails

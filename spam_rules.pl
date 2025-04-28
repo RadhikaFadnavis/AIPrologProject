@@ -2,6 +2,9 @@
 % Spam Detection Rules - Prolog
 % =============================
 
+% --- Include blacklist facts ---
+:- consult('blacklist.pl').
+
 % --- Known spam keywords ---
 spam_keyword("free").
 spam_keyword("win").
@@ -47,8 +50,6 @@ contains_currency_symbol(Msg) :-
 contains_phone_number(Msg) :-
     re_matchsub("\\+?[0-9]{10,}", Msg, _, []).
 
-
-
 % --- Helper to count how many rules apply ---
 spam_score(Msg, Score) :-
     findall(1, (
@@ -63,7 +64,12 @@ spam_score(Msg, Score) :-
     ), Matches),
     length(Matches, Score).
 
-% --- Main Rule: spam if 2 or more conditions are satisfied ---
-is_spam(Msg) :-
-    spam_score(Msg, Score),
+% --- Main Spam Checking Rule ---
+is_spam(Email) :-
+    % If sender is blacklisted, immediate spam
+    blacklisted_sender(Email.sender), !.
+
+is_spam(Email) :-
+    % Else use normal content-based rules
+    spam_score(Email.body, Score),
     Score >= 2.
