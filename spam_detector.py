@@ -3,6 +3,7 @@ from gmailconnect import fetch_unread_emails  # Import the function
 from pyswip import Prolog
 import joblib
 import re
+from dynamic_learning import predict_spam_ml, extract_important_keywords, update_prolog_rules
 
 prolog = Prolog()
 prolog.consult("spam_rules.pl")
@@ -62,6 +63,12 @@ def predict_spam_ml(message):
     print("ml_model.predict([processed_message])", ml_model.predict([processed_message]))
     return ml_model.predict([processed_message])[0]
 
+def reload_prolog():
+    """Reload the Prolog rules from the file."""
+    global prolog
+    prolog = Prolog()
+    prolog.consult("spam_rules.pl")  # Load latest rules
+
 def classify_message(message, sender=None):
     # If sender is blacklisted, immediately classify as Spam
     if sender and check_sender_blacklist(sender):
@@ -77,8 +84,28 @@ def classify_message(message, sender=None):
     is_spam = predict_spam_ml(message)
 
     if is_spam:
-        print("Spam detected by ML model. Updating Prolog rules...")
-        return "Spam (ML Model used)"
+        print(" Spam detected by ML Model. Updating Prolog rules...")
+
+
+        # Step 2: Extract important keywords
+        new_keywords = extract_important_keywords(message, top_n=3)
+
+
+        # Step 3: Update Prolog rules
+        update_prolog_rules(new_keywords)
+
+
+        # Step 4: Reload Prolog rules
+        reload_prolog()
+
+
+        return "Spam (ML Model Detected & Updated Prolog)"
+    else:
+        print("✅ Legitimate (Not Spam)")
+        return "Not Spam"
+
+
+
 
     return "Not Spam"
 

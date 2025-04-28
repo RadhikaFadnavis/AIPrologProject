@@ -5,18 +5,8 @@
 % --- Include blacklist facts ---
 :- consult('blacklist.pl').
 
-% --- Known spam keywords ---
-spam_keyword("free").
-spam_keyword("win").
-spam_keyword("guaranteed").
-spam_keyword("credit card").
-spam_keyword("click here").
-spam_keyword("urgent").
-spam_keyword("limited offer").
-spam_keyword("money").
-spam_keyword("winner").
-spam_keyword("claim now").
-spam_keyword("act now").
+% Load the spam keywords from the separate file
+:- [keywords].  % This loads the facts from keywords.pl
 
 % --- Rule: Check if message contains a spam keyword ---
 contains_spam_keyword(Msg) :-
